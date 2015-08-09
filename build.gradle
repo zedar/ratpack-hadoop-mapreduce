@@ -1,0 +1,79 @@
+// IMPORTANT: because we use custom Ratpack build so we have to define our own dependency for gradle build script.
+//----------------------------------------------------------------------------------------------------------------------
+// Gradle script external dependencies - necessary for local build of the ratpack gradle plugin
+//----------------------------------------------------------------------------------------------------------------------
+buildscript {
+  repositories {
+    jcenter()
+    maven {
+      url "file:///Users/zedar/dev/ratpackdev/ratpack-fork/build/localRepo"
+    }
+  }
+//  dependencies {
+//    classpath "io.ratpack:ratpack-gradle:0.9.19-SNAPSHOT"
+//  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Gradle plugins for plugin central
+//----------------------------------------------------------------------------------------------------------------------
+plugins {
+  id "io.ratpack.ratpack-groovy" version "0.9.19"
+  id "com.github.johnrengelman.shadow" version "1.2.1"
+  id "idea"
+}
+
+
+apply plugin: "io.ratpack.ratpack-groovy"
+
+//----------------------------------------------------------------------------------------------------------------------
+// Project repositories
+//----------------------------------------------------------------------------------------------------------------------
+
+repositories {
+  jcenter()
+  maven {
+    url "file:///Users/zedar/dev/ratpackdev/ratpack-fork/build/localRepo"
+  }
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Project dependencies
+//----------------------------------------------------------------------------------------------------------------------
+
+dependencies {
+  compile ratpack.dependency("guice")
+
+  // Lombok
+  compile "org.projectlombok:lombok:1.16.4"
+
+  // Hadoop client libraries
+//  compile ("org.apache.hadoop:hadoop-client:2.7.1") {
+//    exclude group: "org.slf4j"
+//  }
+
+  // SpringLoaded enables runtime hot reloading.
+  // It is not part of the app runtime and is not shipped in the distribution.
+  springloaded "org.springframework:springloaded:1.2.3.RELEASE"
+
+  // log4j 2
+  runtime "org.apache.logging.log4j:log4j-slf4j-impl:2.0.2"
+  runtime "org.apache.logging.log4j:log4j-api:2.0.2"
+  runtime "org.apache.logging.log4j:log4j-core:2.0.2"
+
+  testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Gradle Wrapper - use $ ./gradlew wrapper in order to force gradle version
+//----------------------------------------------------------------------------------------------------------------------
+
+task wrapper(type: Wrapper) {
+  gradleVersion = "2.5"
+}
+
+//----------------------------------------------------------------------------------------------------------------------
+// Application starting point
+//----------------------------------------------------------------------------------------------------------------------
+
+mainClassName = "rpex.hadoop.Main"
