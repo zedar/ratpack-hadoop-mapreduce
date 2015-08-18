@@ -15,18 +15,18 @@
  *
  */
 
-package rpex.hadoop.configs;
+package rpex.hadoop.mr;
+
+import com.google.inject.Scopes;
+import ratpack.guice.ConfigurableModule;
 
 /**
- * Hadoop configuration properties
+ * Provides configuration for Hadoop's map reduce services, endpoints.
  */
-public class HadoopConfig {
-  private String user;
-  private String yarnRMHost;
-  private String yarnRMPort;
-  private String yarnRMSchedulerHost;
-  private String yarnRMSchedulerPort;
-  private String mapreduceType;
-  private String fsHost;
-  private String fsPort;
+public class MapReduceModule extends ConfigurableModule<MapReduceConfig> {
+
+  @Override
+  protected void configure() {
+    bind(MapReduceEndpoints.class).in(Scopes.SINGLETON);
+  }
 }

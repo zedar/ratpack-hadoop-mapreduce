@@ -17,6 +17,7 @@
 
 package rpex.hadoop;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -26,9 +27,12 @@ import ratpack.handling.Handler;
 import ratpack.handling.RequestId;
 import ratpack.handling.ResponseTimer;
 import ratpack.handling.internal.UuidBasedRequestIdGenerator;
+import ratpack.jackson.Jackson;
 import ratpack.server.BaseDir;
 import ratpack.server.RatpackServer;
-import rpex.hadoop.configs.HadoopConfig;
+import rpex.hadoop.mr.MapReduceConfig;
+import rpex.hadoop.mr.MapReduceEndpoints;
+import rpex.hadoop.mr.MapReduceModule;
 
 /**
  * Starting point for the hadoop analysis server.
@@ -38,34 +42,45 @@ public class Main {
   private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
   public static void main(String... args) throws Exception {
+    LOGGER.debug("STARTING...");
+    ObjectMapper objectMapper = new ObjectMapper();
     RatpackServer.start(spec -> spec
       .serverConfig(builder -> builder
-        .baseDir(BaseDir.find("application.properties"))
-        .props(Main.class.getClassLoader().getResource("application.properties")).env().sysProps()
-        .require("/hadoop", HadoopConfig.class)
+          .baseDir(BaseDir.find("application.properties"))
+          .props(Main.class.getClassLoader().getResource("application.properties"))
+          .env().sysProps()
+          .require("/hadoop", MapReduceConfig.class)
       )
-      .registry(Guice.registry(bindingsSpec -> bindingsSpec
-        .bindInstance(ResponseTimer.decorator())
-      ))
+      .registry(Guice.registry(bindingsSpec -> {
+        bindingsSpec
+          .bindInstance(ResponseTimer.decorator())
+          .module(MapReduceModule.class, config -> config
+              .copyOf(bindingsSpec.getServerConfig().get(MapReduceConfig.class))
+          );
+        Jackson.Init.register(bindingsSpec, objectMapper, objectMapper.writerWithDefaultPrettyPrinter());
+      }))
       .handlers(chain -> chain
-          .all(new Handler() {
-            @Override
-            public void handle(Context ctx) throws Exception {
-              MDC.put("clientIP", ctx.getRequest().getRemoteAddress().getHostText());
-              RequestId.Generator generator = ctx.maybeGet(RequestId.Generator.class).orElse(UuidBasedRequestIdGenerator.INSTANCE);
-              RequestId requestId = generator.generate(ctx);
-              ctx.getRequest().add(RequestId.class, requestId);
-              MDC.put("requestId", requestId.getId());
+        .all(new Handler() {
+          @Override
+          public void handle(Context ctx) throws Exception {
+            MDC.put("clientIP", ctx.getRequest().getRemoteAddress().getHostText());
+            RequestId.Generator generator = ctx.maybeGet(RequestId.Generator.class).orElse(UuidBasedRequestIdGenerator.INSTANCE);
+            RequestId requestId = generator.generate(ctx);
+            ctx.getRequest().add(RequestId.class, requestId);
+            MDC.put("requestId", requestId.getId());
 
-              ctx.next();
-            }
-          })
-          .prefix("v1", chain1 -> chain1
-              .get("api-def", ctx -> {
-                LOGGER.debug("GET API_DEF.JSON");
-                ctx.render(ctx.file("public/apidef/api-def.json"))
-              })
-          )
+            LOGGER.debug("ALL CALLED");
+
+            ctx.next();
+          }
+        })
+        .prefix("v1", chain1 -> chain1
+            .get("api-def", ctx -> {
+              LOGGER.debug("GET API_DEF.JSON");
+              ctx.render(ctx.file("public/apidef/api-def.json"));
+            })
+            .prefix("mr", MapReduceEndpoints.class)
+        )
       )
     );
   }
