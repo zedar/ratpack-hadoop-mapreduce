@@ -23,8 +23,10 @@ import ratpack.func.Action;
 import ratpack.handling.Chain;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
+import rpex.hadoop.mr.topn.dto.CalcTopN;
 
 import static ratpack.jackson.Jackson.json;
+import static ratpack.jackson.Jackson.fromJson;
 
 /**
  * {@code /mr} endpoints chain. Executes different map reduce algorithms
@@ -42,7 +44,16 @@ public class MapReduceEndpoints implements Action<Chain> {
           LOGGER.debug("Starting mapreduce: TopN for N={}", topN);
           ctx.byMethod(byMethodSpec -> byMethodSpec
             .get(() -> {
-              ctx.render(json(topN));
+              ctx.render(json(CalcTopN.of(topN)));
+            })
+            .post(() -> {
+              ctx.parse(fromJson(CalcTopN.class))
+                .onNull(() -> {
+                  ctx.render(json(Integer.valueOf(-1)));
+                })
+                .then(ctn -> {
+                  ctx.render(json(Integer.valueOf(15)));
+                });
             })
           );
         }
