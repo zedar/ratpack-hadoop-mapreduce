@@ -1,9 +1,17 @@
 package rpex.hadoop.mr.topn.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.io.IOException;
 import java.time.LocalDate;
 
 /**
@@ -14,6 +22,7 @@ import java.time.LocalDate;
 @Getter
 @ToString
 @EqualsAndHashCode
+@JsonSerialize(using = TimeInterval.TimeIntervalSerializer.class)
 public class TimeInterval {
   private final LocalDate dateFrom;
   private final LocalDate dateTo;
@@ -49,5 +58,26 @@ public class TimeInterval {
       return null;
     }
     return new TimeInterval(dateFrom, dateTo);
+  }
+
+  @JsonCreator
+  public static TimeInterval of(@JsonProperty("dateFrom") String dateFrom, @JsonProperty("dateTo") String dateTo) {
+    if (dateFrom == null || dateTo == null) {
+      return null;
+    }
+    return of(LocalDate.parse(dateFrom), LocalDate.parse(dateTo));
+  }
+
+  /**
+   * Custom serializer to Json, writing the dates in string format.
+   */
+  public static class TimeIntervalSerializer extends JsonSerializer<TimeInterval> {
+    @Override
+    public void serialize(TimeInterval value, JsonGenerator gen, SerializerProvider serializers) throws IOException, JsonProcessingException {
+      gen.writeStartObject();
+      gen.writeStringField("dateFrom", value.getDateFrom().toString());
+      gen.writeStringField("dateTo", value.getDateTo().toString());
+      gen.writeEndObject();
+    }
   }
 }

@@ -24,6 +24,11 @@ import ratpack.handling.Chain;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
 import rpex.hadoop.mr.topn.dto.CalcTopN;
+import rpex.hadoop.mr.topn.model.TimeInterval;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 
 import static ratpack.jackson.Jackson.json;
 import static ratpack.jackson.Jackson.fromJson;
@@ -44,7 +49,7 @@ public class MapReduceEndpoints implements Action<Chain> {
           LOGGER.debug("Starting mapreduce: TopN for N={}", topN);
           ctx.byMethod(byMethodSpec -> byMethodSpec
             .get(() -> {
-              ctx.render(json(CalcTopN.of(topN)));
+              ctx.render(json(CalcTopN.of(topN, TimeInterval.of(LocalDate.now().toString(), LocalDate.now().plus(1, ChronoUnit.DAYS).toString()))));
             })
             .post(() -> {
               ctx.parse(fromJson(CalcTopN.class))
