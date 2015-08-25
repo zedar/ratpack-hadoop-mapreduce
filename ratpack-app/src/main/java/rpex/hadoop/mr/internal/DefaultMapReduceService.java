@@ -42,6 +42,10 @@ public class DefaultMapReduceService implements MapReduceService {
       configuration.set("yarn.resourcemanager.address", config.getYarnRMAddress());
       configuration.set("yarn.resourcemanager.scheduler.address", config.getYarnRMSchedulerAddress());
       configuration.set("mapreduce.framework.name", config.getMapReduceType());
+
+//      configuration.set("mapreduce.map.cpu.vcores", "16");
+//      configuration.set("mapreduce.reduce.cpu.vcores", "16");
+
       configuration.set("fs.default.name", config.getFileSystemAddress());
 
       Job job = Job.getInstance(configuration, jobName);

@@ -17,6 +17,7 @@
 
 package rpex.hadoop.mr;
 
+import com.google.common.base.Strings;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
@@ -95,7 +96,7 @@ public class MapReduceConfig {
    * @return the address of the YARN resource manager
    */
   public String getYarnRMAddress() {
-    return getYarnRMHost() + ":" + getYarnRMPort();
+    return getYarnRMHost() + (Strings.isNullOrEmpty(getYarnRMPort()) ? "" : ":" + getYarnRMPort());
   }
 
   /**
@@ -139,7 +140,7 @@ public class MapReduceConfig {
    * @return the address of the YARN resource manager scheduler
    */
   public String getYarnRMSchedulerAddress() {
-    return getYarnRMSchedulerHost() + ":" + getYarnRMSchedulerPort();
+    return getYarnRMSchedulerHost() + (Strings.isNullOrEmpty(getYarnRMSchedulerPort()) ? "" : ":" + getYarnRMSchedulerPort());
   }
 
   /**
@@ -201,7 +202,7 @@ public class MapReduceConfig {
    * @return the address of the hadoop file system
    */
   public String getFileSystemAddress() {
-    return "hdfs://" + getFileSystemHost() + ":" + getFileSystemPort();
+    return "hdfs://" + getFileSystemHost() + (Strings.isNullOrEmpty(getFileSystemPort()) ? "" : ":" + getFileSystemPort());
   }
 
   public MapReduceConfig copyOf(final MapReduceConfig config) {

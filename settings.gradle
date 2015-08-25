@@ -1,0 +1,5 @@
+include \
+  "mapreduce-func",
+  "ratpack-app"
+
+rootProject.name = 'ratpack-hadoop-mapreduce'
