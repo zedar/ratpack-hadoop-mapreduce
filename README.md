@@ -1,48 +1,17 @@
-Ratpack project template
+Ratpack, Hadoop and Mapreduce
 -----------------------------
 
-You have just created a basic Groovy Ratpack application. It doesn't do much
-at this point, but we have set you up with a standard project structure, a 
-Guice back Registry, simple home page, and Spock for writing tests (because 
-you'd be mad not to use it).
+This repository contains the example [Ratpack](http://ratpack.io) application executing Hadoop mapreduce functions.
 
-In this project you get:
+There are the modules:
 
-* A Gradle build file with pre-built Gradle wrapper
-* A tiny home page at src/ratpack/templates/index.html (it's a template)
-* A routing file at src/ratpack/Ratpack.groovy
-* Reloading enabled in build.gradle
-* A standard project structure:
+* [mapreduce-func](https://github.com/zedar/ratpack-hadoop-mapreduce/tree/master/mapreduce-func) - implementation of
+mappers, reducers, combiners. Example algorithms: *Top N the most active users from access logs*.
+* [ratpack-app](https://github.com/zedar/ratpack-hadoop-mapreduce/tree/master/ratpack-app) - provides REST API for calling
+mapreduce calculation.
 
-    <proj>
-      |
-      +- src
-          |
-          +- ratpack
-          |     |
-          |     +- Ratpack.groovy
-          |     +- ratpack.properties
-          |     +- public // Static assets in here
-          |          |
-          |          +- images
-          |          +- lib
-          |          +- scripts
-          |          +- styles
-          |
-          +- main
-          |   |
-          |   +- groovy
-                   |
-                   +- // App classes in here!
-          |
-          +- test
-              |
-              +- groovy
-                   |
-                   +- // Spock tests in here!
-
-That's it! You can start the basic app with
+You can start the  app with
 
     ./gradlew run
 
-but it's up to you to add the bells, whistles, and meat of the application.
+
