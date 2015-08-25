@@ -26,10 +26,23 @@ public class CalcTopN {
     this.timeInterval = timeInterval;
   }
 
+  /**
+   * Creates the data transform object for top-n calculation with limit but without time interval.
+   * @param limit a limit for top-n. It is {@code n} in top-n
+   * @return the DTO for top-n calculation
+   */
   public static CalcTopN of(int limit) {
     return new CalcTopN(Limit.of(limit), null);
   }
 
+  /**
+   * Creates the data transform object for top-n calculation with limit and optional time interval.
+   * <p>
+   * It is used as {@code JsonCreator} factory method used for deserialization from {@code JSON}.
+   * @param limit a limit for top-n. It is {@code n} in top-n
+   * @param timeInterval a time interval with date from and date to
+   * @return the DTO for top-n calculation
+   */
   @JsonCreator
   public static CalcTopN of(@JsonProperty("limit")int limit, @JsonProperty("timeInterval") TimeInterval timeInterval) {
     if (timeInterval == null) {

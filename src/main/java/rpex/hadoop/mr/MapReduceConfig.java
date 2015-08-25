@@ -91,6 +91,14 @@ public class MapReduceConfig {
   }
 
   /**
+   * Hadoop YARN resource manager address.
+   * @return the address of the YARN resource manager
+   */
+  public String getYarnRMAddress() {
+    return getYarnRMHost() + ":" + getYarnRMPort();
+  }
+
+  /**
    * Hadoop YARN resource manager scheduler host
    * @return the host name for YARN resource manager scheduler
    */
@@ -124,6 +132,14 @@ public class MapReduceConfig {
   public MapReduceConfig yarnRMSchedulerPort(String yarnRMSchedulerPort) {
     this.yarnRMSchedulerPort = yarnRMSchedulerPort;
     return this;
+  }
+
+  /**
+   * Hadoop YARN resource manager scheduler address
+   * @return the address of the YARN resource manager scheduler
+   */
+  public String getYarnRMSchedulerAddress() {
+    return getYarnRMSchedulerHost() + ":" + getYarnRMSchedulerPort();
   }
 
   /**
@@ -178,6 +194,14 @@ public class MapReduceConfig {
   public MapReduceConfig fileSystemPort(String fileSystemPort) {
     this.fileSystemPort = fileSystemPort;
     return this;
+  }
+
+  /**
+   * Hadoop file system address.
+   * @return the address of the hadoop file system
+   */
+  public String getFileSystemAddress() {
+    return "hdfs://" + getFileSystemHost() + ":" + getFileSystemPort();
   }
 
   public MapReduceConfig copyOf(final MapReduceConfig config) {

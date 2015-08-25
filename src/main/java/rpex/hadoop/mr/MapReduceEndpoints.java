@@ -23,9 +23,11 @@ import ratpack.func.Action;
 import ratpack.handling.Chain;
 import ratpack.handling.Context;
 import ratpack.handling.Handler;
+import rpex.hadoop.mr.topn.TopNService;
 import rpex.hadoop.mr.topn.dto.CalcTopN;
 import rpex.hadoop.mr.topn.model.TimeInterval;
 
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalUnit;
@@ -39,10 +41,17 @@ import static ratpack.jackson.Jackson.fromJson;
 public class MapReduceEndpoints implements Action<Chain> {
   private static final Logger LOGGER = LoggerFactory.getLogger(MapReduceEndpoints.class);
 
+  private final TopNService topNService;
+
+  @Inject
+  public MapReduceEndpoints(TopNService topNService) {
+    this.topNService = topNService;
+  }
+
   @Override
   public void execute(Chain chain) throws Exception {
     chain
-      .path("top/:n", new Handler() {
+      .path("top/:n?", new Handler() {  // :n? means :n parameter is optional
         @Override
         public void handle(Context ctx) throws Exception {
           Integer topN = Integer.valueOf(ctx.getPathTokens().getOrDefault("n", "10"));
@@ -57,7 +66,11 @@ public class MapReduceEndpoints implements Action<Chain> {
                   ctx.render(json(Integer.valueOf(-1)));
                 })
                 .then(ctn -> {
-                  ctx.render(json(Integer.valueOf(15)));
+                  topNService
+                    .apply(ctn.getLimit(), ctn.getTimeInterval(), "input", "output")
+                    .map(r -> json(r))
+                    .then(ctx::render);
+                  //ctx.render(json(ctn.getLimit()));
                 });
             })
           );

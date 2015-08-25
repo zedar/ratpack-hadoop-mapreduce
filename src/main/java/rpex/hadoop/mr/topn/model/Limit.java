@@ -28,6 +28,11 @@ public class Limit {
     this.value = value;
   }
 
+  /**
+   * Factory method for creating limit with lower and upper boundary checking.
+   * @param value a value to convert to the {@link Limit}
+   * @return the {@link Limit}
+   */
   public static Limit of(int value) {
     if (!inRange(value, 1, Integer.MAX_VALUE)) {
       return null;

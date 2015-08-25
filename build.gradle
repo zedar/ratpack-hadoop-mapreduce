@@ -31,6 +31,7 @@ apply plugin: "io.ratpack.ratpack-groovy"
 //----------------------------------------------------------------------------------------------------------------------
 
 repositories {
+  mavenLocal()
   jcenter()
   maven {
     url "file:///Users/zedar/dev/ratpackdev/ratpack-fork/build/localRepo"
@@ -51,7 +52,14 @@ dependencies {
   compile ("org.apache.hadoop:hadoop-client:2.7.1") {
     exclude group: "org.slf4j"
     exclude group: "com.google.guava", module: "guava"
-    exclude group: "log4j", module: "log4j"
+    exclude group: "io.netty", module: "netty-all"
+  }
+
+  // mapreduce functions
+  compile ("mapreduce.func:mapreduce-func:0.1.0") {
+    exclude group: "org.apache.hadoop"
+    exclude group: "org.slf4j"
+    exclude group: "com.google.guava", module: "guava"
     exclude group: "io.netty", module: "netty-all"
   }
 

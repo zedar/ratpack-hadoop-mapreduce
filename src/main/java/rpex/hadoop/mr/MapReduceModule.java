@@ -17,8 +17,14 @@
 
 package rpex.hadoop.mr;
 
+import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import ratpack.guice.ConfigurableModule;
+import rpex.hadoop.mr.internal.DefaultMapReduceService;
+import rpex.hadoop.mr.topn.TopNService;
+import rpex.hadoop.mr.topn.internal.DefaultTopNService;
+
+import javax.inject.Singleton;
 
 /**
  * Provides configuration for Hadoop's map reduce services, endpoints.
@@ -28,5 +34,28 @@ public class MapReduceModule extends ConfigurableModule<MapReduceConfig> {
   @Override
   protected void configure() {
     bind(MapReduceEndpoints.class).in(Scopes.SINGLETON);
+  }
+
+  /**
+   * Provides default implementation of the {@link MapReduceService} interface.
+   * @param config a mapreduce configuration
+   * @return the singleton for {@link MapReduceService} default implementation
+   */
+  @Provides
+  @Singleton
+  public MapReduceService mapReduceService(final MapReduceConfig config) {
+    return new DefaultMapReduceService(config);
+  }
+
+  /**
+   * Provides default implementation of the {@link TopNService} interface.
+   *
+   * @param mapReduceService a map reduce service providing map-reduce infrastructure
+   * @return the singleton for {@link TopNService} implementation.
+   */
+  @Provides
+  @Singleton
+  public TopNService topNService(MapReduceService mapReduceService) {
+    return new DefaultTopNService(mapReduceService);
   }
 }

@@ -60,6 +60,14 @@ public class TimeInterval {
     return new TimeInterval(dateFrom, dateTo);
   }
 
+  /**
+   * Creates time interval from json object.
+   * <p>
+   * Intentionally it is {@code JsonCreator} factory method.
+   * @param dateFrom a starting local date time represeted in string format
+   * @param dateTo an ending local date time represented in string format
+   * @return the time interval
+   */
   @JsonCreator
   public static TimeInterval of(@JsonProperty("dateFrom") String dateFrom, @JsonProperty("dateTo") String dateTo) {
     if (dateFrom == null || dateTo == null) {
